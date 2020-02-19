@@ -9,7 +9,7 @@ import { take, exhaustMap } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 
-@Injectable()
+@ Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
   constructor(private authService: AuthService) {}
 

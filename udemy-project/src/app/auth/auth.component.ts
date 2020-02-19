@@ -5,13 +5,13 @@ import { Observable } from 'rxjs';
 
 import { AuthService, AuthResponseData } from './auth.service';
 
-@Component({
+@ Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html'
 })
 export class AuthComponent {
   isLoginMode = true;
-  isLoading = false;
+  isLoading = false ;
   error: string = null;
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -27,7 +27,7 @@ export class AuthComponent {
     const email = form.value.email;
     const password = form.value.password;
 
-    let authObs: Observable<AuthResponseData>;
+    let authObs: Observable< AuthResponseData>;
 
     this.isLoading = true;
 
@@ -40,16 +40,20 @@ export class AuthComponent {
     authObs.subscribe(
       resData => {
         console.log(resData);
-        this.isLoading = false;
+        this.isLoading = false ;
         this.router.navigate(['/recipes']);
       },
       errorMessage => {
         console.log(errorMessage);
         this.error = errorMessage;
-        this.isLoading = false;
+        this.isLoading = false ;
       }
     );
 
     form.reset();
+  }
+
+  onHaldeErrors(){
+      this.error = null;
   }
 }

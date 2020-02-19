@@ -11,7 +11,7 @@ import { map, tap, take } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 
-@Injectable({ providedIn: 'root' })
+@ Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -21,8 +21,8 @@ export class AuthGuard implements CanActivate {
   ):
     | boolean
     | UrlTree
-    | Promise<boolean | UrlTree>
-    | Observable<boolean | UrlTree> {
+    | Promise< boolean | UrlTree>
+    | Observable< boolean | UrlTree> {
     return this.authService.user.pipe(
       take(1),
       map(user => {
