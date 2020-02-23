@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, BehaviorSubject } from 'rxjs';
+import { environment } from './../../environments/environment';
 
 import { User } from './user.model';
 
@@ -16,17 +17,19 @@ export interface AuthResponseData {
   registered?: boolean ;
 }
 
+
+
 @ Injectable({ providedIn: 'root' })
 export class AuthService {
   user = new BehaviorSubject< User>(null);
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient , private router: Router ) {}
 
-  signup(email: string, password: string) {
+  signup(email: string , password: string ) {
     return this.http
       .post< AuthResponseData>(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyDb0xTaRAoxyCgvaDF3kk5VYOsTwB_3o7Y',
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' + environment.firebaseAPIKey,
         {
           email: {email},
           password: {password},
@@ -46,10 +49,10 @@ export class AuthService {
       );
   }
 
-  login(email: string, password: string) {
+  login(email: string , password: string ) {
     return this.http
       .post< AuthResponseData>(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDb0xTaRAoxyCgvaDF3kk5VYOsTwB_3o7Y',
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + environment.firebaseAPIKey,
         {
           email: {email},
           password: {password},
@@ -97,25 +100,25 @@ export class AuthService {
   }
 
   logout() {
-    this.user.next(null);
+    this.user.next(null );
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
-    this.tokenExpirationTimer = null;
+    this.tokenExpirationTimer = null ;
   }
 
-  autoLogout(expirationDuration: number) {
+  autoLogout(expirationDuration: number ) {
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
     }, expirationDuration);
   }
 
   private handleAuthentication(
-    email: string,
-    userId: string,
-    token: string,
+    email: string ,
+    userId: string ,
+    token: string ,
     expiresIn: number
   ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
@@ -125,7 +128,7 @@ export class AuthService {
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
-  private handleError(errorRes: HttpErrorResponse) {
+  private handleError(errorRes: HttpErrorResponse ) {
     let errorMessage = 'An unknown error occurred!';
     if (!errorRes.error || !errorRes.error.error) {
       return throwError(errorMessage);
