@@ -9,7 +9,7 @@ import { HeaderComponent } from './header/header.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { CoreModule } from './core.module';
-import { shoppingListReducer } from './shopping-list/store/shoppinglist.reducer';
+import * as fromApp from './store/app.reducer';
 
 
 @ NgModule({
@@ -20,7 +20,7 @@ import { shoppingListReducer } from './shopping-list/store/shoppinglist.reducer'
   imports: [
     BrowserModule,
     HttpClientModule,
-    StoreModule.forRoot({shoppingList: shoppingListReducer}),
+    StoreModule.forRoot(fromApp.appReducer),
     AppRoutingModule,
     ShoppingListModule,
     SharedModule,
