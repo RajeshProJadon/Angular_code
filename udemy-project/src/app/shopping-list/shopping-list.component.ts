@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import { Ingredient } from '../shared/ingredient.model';
-import { LoggingService } from './../logging.service';
-import { Store } from '@ngrx/store';
+import { LoggingService } from '../logging.service';
 import * as ShoppingListActions from './store/shopping-list.actions';
 import * as fromApp from '../store/app.reducer';
 
@@ -19,18 +19,18 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   constructor(
     private loggingService: LoggingService,
     private store: Store<fromApp.AppState>
-    ) { }
+  ) {}
 
   ngOnInit() {
-     this.ingredients = this.store.select('shoppingList');
+    this.ingredients = this.store.select('shoppingList');
     // this.ingredients = this.slService.getIngredients();
-    // this.subscription = this.slService.ingredientsChanged
-    //   .subscribe(
-    //     (ingredients: Ingredient[]) => {
-    //       this.ingredients = ingredients;
-    //     }
+    // this.subscription = this.slService.ingredientsChanged.subscribe(
+    //   (ingredients: Ingredient[]) => {
+    //     this.ingredients = ingredients;
+    //   }
     // );
-      this.loggingService.printLog('Hello from Shopping list component ngOninit');
+
+    this.loggingService.printLog('Hello from ShoppingListComponent ngOnInit!');
   }
 
   onEditItem(index: number) {

@@ -1,40 +1,39 @@
-import { Component, ComponentFactoryResolver, ViewChild, ViewContainerRef, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ViewChild,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { PlaceholderDirective } from './../shared/placeholder/placeholder.directive';
-import { AuthService, AuthResponseData } from './auth.service';
 import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/placeholder/placeholder.directive';
 import * as fromApp from '../store/app.reducer';
 import * as AuthActions from './store/auth.actions';
 
-
-@ Component({
+@Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html'
 })
 export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
-  isLoading = false ;
+  isLoading = false;
   error: string = null;
+  @ViewChild(PlaceholderDirective, { static: false }) alertHost: PlaceholderDirective;
 
-  @ ViewChild(PlaceholderDirective) alertHost: PlaceholderDirective ;
-  closeSub: any;
+  private closeSub: Subscription;
+  private storeSub: Subscription;
 
   constructor(
-      private authService: AuthService,
-      private router: Router,
-      private componentFactoryResolver: ComponentFactoryResolver,
-      private store: Store<fromApp.AppState>) {}
-
-  onSwitchMode() {
-    this.isLoginMode = !this.isLoginMode;
-  }
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   ngOnInit() {
-    this.store.select('auth').subscribe(authState => {
+    this.storeSub = this.store.select('auth').subscribe(authState => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
       if (this.error) {
@@ -43,7 +42,11 @@ export class AuthComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSubmit(form: NgForm ) {
+  onSwitchMode() {
+    this.isLoginMode = !this.isLoginMode;
+  }
+
+  onSubmit(form: NgForm) {
     if (!form.valid) {
       return;
     }
@@ -52,28 +55,45 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     if (this.isLoginMode) {
       // authObs = this.authService.login(email, password);
-      this.store.dispatch(new AuthActions.LoginStart({ email: email, password: password }));
+      this.store.dispatch(
+        new AuthActions.LoginStart({ email: email, password: password })
+      );
     } else {
-       this.store.dispatch(new AuthActions.SignupStart({email: email, password: password}));
+      this.store.dispatch(
+        new AuthActions.SignupStart({ email: email, password: password })
+      );
     }
 
     form.reset();
   }
 
-  onHaldeErrors(){
-      this.error = null ;
+  onHandleError() {
+    this.store.dispatch(new AuthActions.ClearError());
   }
 
-  ngOnDestroy(){
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
+  ngOnDestroy() {
     if (this.closeSub) {
       this.closeSub.unsubscribe();
     }
+    if (this.storeSub) {
+      this.storeSub.unsubscribe();
+    }
   }
-  private showErrorAlert(message: string ) {
+
+  private showErrorAlert(message: string) {
     // const alertCmp = new AlertComponent();
-    const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(
+      AlertComponent
+    );
     const hostViewContainerRef = this.alertHost.viewContainerRef;
+    hostViewContainerRef.clear();
+
+    const componentRef = hostViewContainerRef.createComponent(alertCmpFactory);
+
+    componentRef.instance.message = message;
+    this.closeSub = componentRef.instance.close.subscribe(() => {
+      this.closeSub.unsubscribe();
+      hostViewContainerRef.clear();
+    });
   }
 }
