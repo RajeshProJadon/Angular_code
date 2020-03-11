@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "shopping-cart-f7e5b": {
+      "hosting": {
+        "Ang-product": [
+          "shopping-cart-f7e5b"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "shopping-cart-f7e5b"
+  }
+}
